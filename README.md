@@ -10,3 +10,4 @@ Tested on:
 
 * Arduino Due @ 84 MHz - 0.38 double-precision MFLOPS, 0.62 single-precision
 * Espressif ESP32 @ 160 MHz - 1.98 double-precision MFLOPS, 13.4 single-precision
+* Arduino Uno R3 @ 16 MHz - 0.077 MFLOPS single precision (double-precision not available on the 8-bit AVR platfrom)
