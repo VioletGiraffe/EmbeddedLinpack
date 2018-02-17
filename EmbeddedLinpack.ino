@@ -1,26 +1,28 @@
 #include <Arduino.h> // Not required for successful compilation, but required for PlatformIO/VS Code indexer to see symbols from this header
 #include <math.h>
 
-double benchmark ( void );
-double cpu_time ( void );
-void daxpy ( int n, double da, double dx[], int incx, double dy[], int incy );
-double ddot ( int n, double dx[], int incx, double dy[], int incy );
-int dgefa ( double a[], int lda, int n, int ipvt[] );
-void dgesl ( double a[], int lda, int n, int ipvt[], double b[], int job );
-void dscal ( int n, double sa, double x[], int incx );
-int idamax ( int n, double dx[], int incx );
-double r8_abs ( double x );
-double r8_epsilon ( void );
-double r8_max ( double x, double y );
-double r8_random ( int iseed[4] );
-void r8mat_gen ( int lda, int n, double*a );
+using floating_point_t = double;
+
+floating_point_t benchmark ( void );
+floating_point_t cpu_time ( void );
+void daxpy ( int n, floating_point_t da, floating_point_t dx[], int incx, floating_point_t dy[], int incy );
+floating_point_t ddot ( int n, floating_point_t dx[], int incx, floating_point_t dy[], int incy );
+int dgefa ( floating_point_t a[], int lda, int n, int ipvt[] );
+void dgesl ( floating_point_t a[], int lda, int n, int ipvt[], floating_point_t b[], int job );
+void dscal ( int n, floating_point_t sa, floating_point_t x[], int incx );
+int idamax ( int n, floating_point_t dx[], int incx );
+floating_point_t r8_abs ( floating_point_t x );
+floating_point_t r8_epsilon ( void );
+floating_point_t r8_max ( floating_point_t x, floating_point_t y );
+floating_point_t r8_random ( int iseed[4] );
+void r8mat_gen ( int lda, int n, floating_point_t*a );
 
 void setup() {
   Serial.begin(115200);
 
   Serial.println("Starting benchmark...");
 
-  double minMflops = 1000000000.0, maxMflops = 0.0, avgMflops = 0.0;
+  floating_point_t minMflops = 1000000000.0, maxMflops = 0.0, avgMflops = 0.0;
   constexpr int N_RUNS = 100;
   for (int i = 0; i < N_RUNS; ++i)
   {
@@ -42,7 +44,7 @@ void loop() {
 
 /******************************************************************************/
 
-double benchmark ( void )
+floating_point_t benchmark ( void )
 
 /******************************************************************************/
 /*
@@ -52,7 +54,7 @@ double benchmark ( void )
 
   Discussion:
 
-    LINPACK_BENCH drives the double precision LINPACK benchmark program.
+    LINPACK_BENCH drives the floating_point_t precision LINPACK benchmark program.
 
   Modified:
 
@@ -66,27 +68,27 @@ double benchmark ( void )
 # define N 8
 # define LDA ( N + 1 )
 
-  static double a[N * LDA];
-  static double a_max;
-  static double b[N];
-  static double b_max;
-  const double cray = 0.056;
-  static double eps;
+  static floating_point_t a[N * LDA];
+  static floating_point_t a_max;
+  static floating_point_t b[N];
+  static floating_point_t b_max;
+  const floating_point_t cray = 0.056;
+  static floating_point_t eps;
   int i;
   int info;
   static int ipvt[N];
   int j;
   int job;
-  double ops;
-  static double resid[N];
-  double resid_max;
-  double residn;
-  static double rhs[N];
-  double t1;
-  double t2;
-  static double time[6];
-  double total;
-  double x[N];
+  floating_point_t ops;
+  static floating_point_t resid[N];
+  floating_point_t resid_max;
+  floating_point_t residn;
+  static floating_point_t rhs[N];
+  floating_point_t t1;
+  floating_point_t t2;
+  static floating_point_t time[6];
+  floating_point_t total;
+  floating_point_t x[N];
 
   Serial.print( "\n" );
   Serial.print ( "LINPACK_BENCH\n" );
@@ -98,7 +100,7 @@ double benchmark ( void )
   Serial.println (String("  Matrix order N               =") + N);
   Serial.println ( "  Leading matrix dimension LDA = " + LDA );
 
-  ops = ( double ) ( 2L * N * N * N ) / 3.0 + 2.0 * ( double ) ( (long)N * N );
+  ops = ( floating_point_t ) ( 2L * N * N * N ) / 3.0 + 2.0 * ( floating_point_t ) ( (long)N * N );
 
 /*
   Allocate space for arrays.
@@ -195,7 +197,7 @@ double benchmark ( void )
 
   eps = r8_epsilon ( );
 
-  residn = resid_max / ( double ) N / a_max / b_max / eps;
+  residn = resid_max / ( floating_point_t ) N / a_max / b_max / eps;
 
   time[2] = total;
   if ( 0.0 < total )
@@ -249,7 +251,7 @@ double benchmark ( void )
 }
 /******************************************************************************/
 
-double cpu_time ( void )
+floating_point_t cpu_time ( void )
 
 /******************************************************************************/
 /*
@@ -277,19 +279,19 @@ double cpu_time ( void )
 
   Parameters:
 
-    Output, double CPU_TIME, the current reading of the CPU clock, in seconds.
+    Output, floating_point_t CPU_TIME, the current reading of the CPU clock, in seconds.
 */
 {
-  double value;
+  floating_point_t value;
 
-  value = ( double ) micros ( ) 
-        / ( double ) 1000000;
+  value = ( floating_point_t ) micros ( ) 
+        / ( floating_point_t ) 1000000;
 
   return value;
 }
 /******************************************************************************/
 
-void daxpy ( int n, double da, double dx[], int incx, double dy[], int incy )
+void daxpy ( int n, floating_point_t da, floating_point_t dx[], int incx, floating_point_t dy[], int incy )
 
 /******************************************************************************/
 /*
@@ -326,13 +328,13 @@ void daxpy ( int n, double da, double dx[], int incx, double dy[], int incy )
 
     Input, int N, the number of elements in DX and DY.
 
-    Input, double DA, the multiplier of DX.
+    Input, floating_point_t DA, the multiplier of DX.
 
-    Input, double DX[*], the first vector.
+    Input, floating_point_t DX[*], the first vector.
 
     Input, int INCX, the increment between successive entries of DX.
 
-    Input/output, double DY[*], the second vector.
+    Input/output, floating_point_t DY[*], the second vector.
     On output, DY[*] has been replaced by DY[*] + DA * DX[*].
 
     Input, int INCY, the increment between successive entries of DY.
@@ -407,7 +409,7 @@ void daxpy ( int n, double da, double dx[], int incx, double dy[], int incy )
 }
 /******************************************************************************/
 
-double ddot ( int n, double dx[], int incx, double dy[], int incy )
+floating_point_t ddot ( int n, floating_point_t dx[], int incx, floating_point_t dy[], int incy )
 
 /******************************************************************************/
 /*
@@ -444,19 +446,19 @@ double ddot ( int n, double dx[], int incx, double dy[], int incy )
 
     Input, int N, the number of entries in the vectors.
 
-    Input, double DX[*], the first vector.
+    Input, floating_point_t DX[*], the first vector.
 
     Input, int INCX, the increment between successive entries in DX.
 
-    Input, double DY[*], the second vector.
+    Input, floating_point_t DY[*], the second vector.
 
     Input, int INCY, the increment between successive entries in DY.
 
-    Output, double DDOT, the sum of the product of the corresponding
+    Output, floating_point_t DDOT, the sum of the product of the corresponding
     entries of DX and DY.
 */
 {
-  double dtemp;
+  floating_point_t dtemp;
   int i;
   int ix;
   int iy;
@@ -524,7 +526,7 @@ double ddot ( int n, double dx[], int incx, double dy[], int incy )
 }
 /******************************************************************************/
 
-int dgefa ( double a[], int lda, int n, int ipvt[] )
+int dgefa ( floating_point_t a[], int lda, int n, int ipvt[] )
 
 /******************************************************************************/
 /*
@@ -551,7 +553,7 @@ int dgefa ( double a[], int lda, int n, int ipvt[] )
 
   Parameters:
 
-    Input/output, double A[LDA*N].
+    Input/output, floating_point_t A[LDA*N].
     On intput, the matrix to be factored.
     On output, an upper triangular matrix and the multipliers used to obtain
     it.  The factorization can be written A=L*U, where L is a product of
@@ -574,7 +576,7 @@ int dgefa ( double a[], int lda, int n, int ipvt[] )
   int j;
   int k;
   int l;
-  double t;
+  floating_point_t t;
 /*
   Gaussian elimination with partial pivoting.
 */
@@ -637,7 +639,7 @@ int dgefa ( double a[], int lda, int n, int ipvt[] )
 }
 /******************************************************************************/
 
-void dgesl ( double a[], int lda, int n, int ipvt[], double b[], int job )
+void dgesl ( floating_point_t a[], int lda, int n, int ipvt[], floating_point_t b[], int job )
 
 /******************************************************************************/
 /*
@@ -677,7 +679,7 @@ void dgesl ( double a[], int lda, int n, int ipvt[], double b[], int job )
 
   Parameters:
 
-    Input, double A[LDA*N], the output from DGECO or DGEFA.
+    Input, floating_point_t A[LDA*N], the output from DGECO or DGEFA.
 
     Input, int LDA, the leading dimension of A.
 
@@ -685,7 +687,7 @@ void dgesl ( double a[], int lda, int n, int ipvt[], double b[], int job )
 
     Input, int IPVT[N], the pivot vector from DGECO or DGEFA.
 
-    Input/output, double B[N].
+    Input/output, floating_point_t B[N].
     On input, the right hand side vector.
     On output, the solution vector.
 
@@ -696,7 +698,7 @@ void dgesl ( double a[], int lda, int n, int ipvt[], double b[], int job )
 {
   int k;
   int l;
-  double t;
+  floating_point_t t;
 /*
   Solve A * X = B.
 */
@@ -752,7 +754,7 @@ void dgesl ( double a[], int lda, int n, int ipvt[], double b[], int job )
 }
 /******************************************************************************/
 
-void dscal ( int n, double sa, double x[], int incx )
+void dscal ( int n, floating_point_t sa, floating_point_t x[], int incx )
 
 /******************************************************************************/
 /*
@@ -785,9 +787,9 @@ void dscal ( int n, double sa, double x[], int incx )
 
     Input, int N, the number of entries in the vector.
 
-    Input, double SA, the multiplier.
+    Input, floating_point_t SA, the multiplier.
 
-    Input/output, double X[*], the vector to be scaled.
+    Input/output, floating_point_t X[*], the vector to be scaled.
 
     Input, int INCX, the increment between successive entries of X.
 */
@@ -838,7 +840,7 @@ void dscal ( int n, double sa, double x[], int incx )
 }
 /******************************************************************************/
 
-int idamax ( int n, double dx[], int incx )
+int idamax ( int n, floating_point_t dx[], int incx )
 
 /******************************************************************************/
 /*
@@ -875,7 +877,7 @@ int idamax ( int n, double dx[], int incx )
 
     Input, int N, the number of entries in the vector.
 
-    Input, double X[*], the vector to be examined.
+    Input, floating_point_t X[*], the vector to be examined.
 
     Input, int INCX, the increment between successive entries of SX.
 
@@ -883,7 +885,7 @@ int idamax ( int n, double dx[], int incx )
     absolute value.
 */
 {
-  double dmax;
+  floating_point_t dmax;
   int i;
   int ix;
   int value;
@@ -936,7 +938,7 @@ int idamax ( int n, double dx[], int incx )
 }
 /******************************************************************************/
 
-double r8_abs ( double x )
+floating_point_t r8_abs ( floating_point_t x )
 
 /******************************************************************************/
 /*
@@ -954,12 +956,12 @@ double r8_abs ( double x )
 
   Parameters:
 
-    Input, double X, the quantity whose absolute value is desired.
+    Input, floating_point_t X, the quantity whose absolute value is desired.
 
-    Output, double R8_ABS, the absolute value of X.
+    Output, floating_point_t R8_ABS, the absolute value of X.
 */
 {
-  double value;
+  floating_point_t value;
 
   if ( 0.0 <= x )
   {
@@ -973,7 +975,7 @@ double r8_abs ( double x )
 }
 /******************************************************************************/
 
-double r8_epsilon ( void )
+floating_point_t r8_epsilon ( void )
 
 /******************************************************************************/
 /*
@@ -1003,14 +1005,14 @@ double r8_epsilon ( void )
 
   Parameters:
 
-    Output, double R8_EPSILON, the double precision round-off unit.
+    Output, floating_point_t R8_EPSILON, the floating_point_t precision round-off unit.
 */
 {
-  double r;
+  floating_point_t r;
 
   r = 1.0;
 
-  while ( 1.0 < ( double ) ( 1.0 + r )  )
+  while ( 1.0 < ( floating_point_t ) ( 1.0 + r )  )
   {
     r = r / 2.0;
   }
@@ -1020,7 +1022,7 @@ double r8_epsilon ( void )
 }
 /******************************************************************************/
 
-double r8_max ( double x, double y )
+floating_point_t r8_max ( floating_point_t x, floating_point_t y )
 
 /******************************************************************************/
 /*
@@ -1038,12 +1040,12 @@ double r8_max ( double x, double y )
 
   Parameters:
 
-    Input, double X, Y, the quantities to compare.
+    Input, floating_point_t X, Y, the quantities to compare.
 
-    Output, double R8_MAX, the maximum of X and Y.
+    Output, floating_point_t R8_MAX, the maximum of X and Y.
 */
 {
-  double value;
+  floating_point_t value;
 
   if ( y < x )
   {
@@ -1057,7 +1059,7 @@ double r8_max ( double x, double y )
 }
 /******************************************************************************/
 
-double r8_random ( int iseed[4] )
+floating_point_t r8_random ( int iseed[4] )
 
 /******************************************************************************/
 /*
@@ -1084,7 +1086,7 @@ double r8_random ( int iseed[4] )
     elements must be between 0 and 4095, and ISEED(4) must be odd.
     On exit, the seed is updated.
 
-    Output, double R8_RANDOM, the next pseudorandom number.
+    Output, floating_point_t R8_RANDOM, the next pseudorandom number.
 */
 {
   int ipw2 = 4096;
@@ -1096,8 +1098,8 @@ double r8_random ( int iseed[4] )
   int m2 = 322;
   int m3 = 2508;
   int m4 = 2549;
-  double r = 1.0 / 4096.0;
-  double value;
+  floating_point_t r = 1.0 / 4096.0;
+  floating_point_t value;
 /*
   Multiply the seed by the multiplier modulo 2**48.
 */
@@ -1123,16 +1125,16 @@ double r8_random ( int iseed[4] )
   Convert 48-bit integer to a real number in the interval (0,1)
 */
   value = 
-      r * ( ( double ) ( it1 ) 
-    + r * ( ( double ) ( it2 ) 
-    + r * ( ( double ) ( it3 ) 
-    + r * ( ( double ) ( it4 ) ) ) ) );
+      r * ( ( floating_point_t ) ( it1 ) 
+    + r * ( ( floating_point_t ) ( it2 ) 
+    + r * ( ( floating_point_t ) ( it3 ) 
+    + r * ( ( floating_point_t ) ( it4 ) ) ) ) );
 
   return value;
 }
 /******************************************************************************/
 
-void r8mat_gen ( int lda, int n, double*a )
+void r8mat_gen ( int lda, int n, floating_point_t*a )
 
 /******************************************************************************/
 /*
@@ -1150,7 +1152,7 @@ void r8mat_gen ( int lda, int n, double*a )
 
     Input, integer N, the order of the matrix.
 
-    Output, double R8MAT_GEN[LDA*N], the N by N matrix.
+    Output, floating_point_t R8MAT_GEN[LDA*N], the N by N matrix.
 */
 {
   int i;
