@@ -1,7 +1,7 @@
 #include <Arduino.h> // Not required for successful compilation, but required for PlatformIO/VS Code indexer to see symbols from this header
 #include <math.h>
 
-using floating_point_t = double;
+using floating_point_t = float;
 
 floating_point_t benchmark ( void );
 floating_point_t cpu_time ( void );
@@ -96,7 +96,12 @@ floating_point_t benchmark ( void )
   Serial.print ( "\n" );
   Serial.print ( "  The LINPACK benchmark.\n" );
   Serial.print ( "  Language: C\n" );
-  Serial.print ( "  Datatype: Double precision real\n" );
+  if (sizeof(floating_point_t) == 8)
+    Serial.print ( "  Datatype: Double precision real\n" );
+  else if (sizeof(floating_point_t) == 4)
+    Serial.print ( "  Datatype: Single precision real\n" );
+  else
+    Serial.print ( "  Datatype: uknown\n" );
   Serial.println (String("  Matrix order N               =") + N);
   Serial.println ( "  Leading matrix dimension LDA = " + LDA );
 
