@@ -3,6 +3,7 @@ python:
     - "2.7"
 install:
     - pip install -U platformio
+    - platformio upgrade
 script:
     - platformio run -e uno
     - platformio run -e due
