@@ -1,7 +1,5 @@
 # EmbeddedLinpack
 
-[![Build Status](https://travis-ci.org/VioletGiraffe/EmbeddedLinpack.svg?branch=master)](https://travis-ci.org/VioletGiraffe/EmbeddedLinpack)
-
 Linpack benchmark for embedded systems (Arduino, ESP32 et. al.). Adapted from https://gist.github.com/projectgus/8279947
 
 This is a project for @platformIO. But you can also open the .ino file in the Arduino IDE and not have a care in the world about what PlatformIO is.
